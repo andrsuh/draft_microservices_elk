@@ -1,0 +1,79 @@
+version: "3"
+services:
+#  book-gateway-service:
+#    build:
+#      context: ./book-gateway-service
+##    volumes:
+##      - "./book-gateway-service/target:/target"
+#    ports:
+#      - "8890:8890"
+#    depends_on:
+#      - postgres-db
+#      - eureka-service-registry
+#  book-service:
+#    build:
+#      context: ./book-service
+##    volumes:
+##      - "./book-service/target:/target"
+#    ports:
+#      - "8888:8888"
+#    depends_on:
+#      - postgres-db
+#      - eureka-service-registry
+#  order-service:
+#    build:
+#      context: ./order-service
+##    volumes:
+##      - "./order-service/target:/target"
+#    ports:
+#      - "9999:9999"
+#    depends_on:
+#      - postgres-db
+#      - eureka-service-registry
+#  eureka-service-registry:
+#    build:
+#      context: ./eureka-service
+##    volumes:
+##      - "./eureka-service/target:/target"
+#    ports:
+#      - "8761:8761"
+#  admin-service:
+#    build:
+#      context: ./admin-service
+##    volumes:
+##      - "./eureka-service/target:/target"
+#    ports:
+#      - "10023:10023"
+#    depends_on:
+#      - eureka-service-registry
+#  postgres-db:
+#    image: postgres
+  elasticsearch-service:
+    image: elasticsearch
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+  kibana-service:
+    image: kibana
+    ports:
+      - "5601:5601"
+    links:
+      - elasticsearch-service:elasticsearch
+    depends_on:
+      - elasticsearch-service
+  logstash-service:
+    build:
+      context: ./logstash
+    ports:
+      - "9600:9600"
+#    volumes:
+#      - "./logstash:/.config-dir"
+#    command: ["logstash", "-f", "./config-dir/logstash.conf"]
+    depends_on:
+      - elasticsearch-service
+
+
+
+

@@ -1,0 +1,9 @@
+# elasticsearch
+docker run -d -p 9200:9200 -p 9300:9300 -it -h elasticsearch --name elasticsearch elasticsearch
+
+# kibna
+docker run -d  -p 5601:5601 -h kibana --name kibana --link elasticsearch:elasticsearch kibana
+
+# run logstash
+docker build . -t my_logstash
+docker run -it -p 9600:9600 -h logstash --name logstash --link elasticsearch:elasticsearch-service --rm  my_logstash

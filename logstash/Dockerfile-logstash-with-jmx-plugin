@@ -1,0 +1,5 @@
+FROM logstash
+
+RUN ./usr/share/logstash/bin/logstash-plugin install logstash-input-jmx
+
+CMD ["-f", "/config-dir/logstash.conf"]
