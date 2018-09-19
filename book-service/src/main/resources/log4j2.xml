@@ -5,7 +5,6 @@
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %c [%p] %m%n"/>
         </Console>
         <Socket name="logstash" host="localhost" port="9600">
-            <!--<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %c [%p] %m%n" charset="UTF-8" />-->
             <JsonLayout compact="true" eventEol="true" />
         </Socket>
         <Async name="LogstashAsync" bufferSize="204800">
@@ -15,7 +14,8 @@
     <Loggers>
         <Root level="info">
             <AppenderRef ref="CA"/>
-            <appender-ref ref="LogstashAsync"/>
+            <AppenderRef ref="LogstashAsync"/>
         </Root>
+
     </Loggers>
 </Configuration>

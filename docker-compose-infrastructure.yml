@@ -1,0 +1,39 @@
+version: "3"
+services:
+  eureka-service-registry:
+    build:
+      context: ./eureka-service
+    ports:
+      - "8761:8761"
+
+  admin-service:
+    build:
+      context: ./admin-service
+    ports:
+      - "10023:10023"
+    depends_on:
+      - eureka-service-registry
+
+  elasticsearch:
+    image: elasticsearch:latest
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+  kibana:
+    image: kibana:latest
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+  logstash:
+    image: logstash:latest
+    ports:
+      - "9600:9600"
+    volumes:
+      - ${PROJECT_DIRECTORY}\logstash\config:/usr/share/logstash/config:ro
+      - ${PROJECT_DIRECTORY}\logstash\pipeline:/usr/share/logstash/pipeline:ro
+    command: ["-f", "/usr/share/logstash/pipeline/logstash.conf"]
+    depends_on:
+      - elasticsearch
