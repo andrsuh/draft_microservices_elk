@@ -16,6 +16,5 @@
             <AppenderRef ref="CA"/>
             <AppenderRef ref="LogstashAsync"/>
         </Root>
-
     </Loggers>
 </Configuration>
