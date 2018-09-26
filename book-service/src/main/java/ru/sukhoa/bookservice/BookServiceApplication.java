@@ -1,6 +1,5 @@
 package ru.sukhoa.bookservice;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,7 +15,7 @@ import java.util.stream.Stream;
 public class BookServiceApplication {
 
     @Bean
-    CommandLineRunner cmlr(@Value("${eureka.instance.instance-id}") String appName, BookRepository repository) {
+    CommandLineRunner cmlr(BookRepository repository) {
         return args -> {
             Stream.of("Book1", "Book2", "Book3", "Book4", "Book5", "Book6")
                     .map(name -> new Book(name, 5))

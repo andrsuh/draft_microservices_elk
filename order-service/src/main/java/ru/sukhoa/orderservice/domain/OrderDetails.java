@@ -8,7 +8,7 @@ import javax.persistence.Table;
 @Table(name = "order_details")
 public class OrderDetails {
     @Id
-    private int id = ( int ) ( Math.random() * 100_000 );
+    private int id = (int) (Math.random() * 100_000);
 
     private int orderId;
 
@@ -19,7 +19,7 @@ public class OrderDetails {
     public OrderDetails() {
     }
 
-    public OrderDetails( int orderId, int bookId, int count ) {
+    public OrderDetails(int orderId, int bookId, int count) {
         this.orderId = orderId;
         this.bookId = bookId;
         this.count = count;

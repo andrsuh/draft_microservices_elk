@@ -15,15 +15,15 @@ import java.util.stream.Stream;
 public class OrderServiceApplication {
 
     @Bean
-    CommandLineRunner cmlr( UserRepository userRepository ) {
+    CommandLineRunner cmlr(UserRepository userRepository) {
         return args -> {
-            Stream.of( "user_1", "user_2", "user_3" )
-                    .map( User::new )
-                    .forEach( userRepository::save );
+            Stream.of("user_1", "user_2", "user_3")
+                    .map(User::new)
+                    .forEach(userRepository::save);
         };
     }
 
-    public static void main( String[] args ) {
-        SpringApplication.run( OrderServiceApplication.class, args );
+    public static void main(String[] args) {
+        SpringApplication.run(OrderServiceApplication.class, args);
     }
 }

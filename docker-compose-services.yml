@@ -1,22 +1,23 @@
 version: "3"
 services:
-  book-gateway-service:
-    build:
-      context: ./book-gateway-service
-    ports:
-      - "8890:8890"
-    depends_on:
-      - postgres-db
-      - eureka-service-registry
-
-#  book-service:
+#  book-gateway-service:
 #    build:
-#      context: ./book-service
+#      context: ./book-gateway-service
 #    ports:
-#      - "8888:8888"
+#      - "8890:8890"
 #    depends_on:
 #      - postgres-db
 #      - eureka-service-registry
+
+  book-service:
+    build:
+      context: ./book-service
+    ports:
+      - "8888:8888"
+    depends_on:
+      - postgres-db
+      - elasticsearch
+      - eureka-service-registry
 
 #  order-service:
 #    build:
