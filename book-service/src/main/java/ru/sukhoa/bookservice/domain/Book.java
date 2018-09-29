@@ -5,6 +5,7 @@ import javax.persistence.Id;
 
 @Entity
 public class Book {
+
     @Id
     private long id = ( int ) ( Math.random() * 100_000 );
     private String name;

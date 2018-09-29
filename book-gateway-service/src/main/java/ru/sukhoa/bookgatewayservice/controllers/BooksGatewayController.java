@@ -1,9 +1,10 @@
 package ru.sukhoa.bookgatewayservice.controllers;
 
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpMethod;
@@ -14,25 +15,36 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import ru.sukhoa.bookgatewayservice.domain.Book;
 import ru.sukhoa.bookgatewayservice.domain.Order;
+import ru.sukhoa.bookgatewayservice.services.BookService;
+import ru.sukhoa.bookgatewayservice.services.OrderService;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController("api/orders")
 public class BooksGatewayController {
-    private static final Logger logger = LogManager.getLogger(BooksGatewayController.class);
+    private static final Logger LOGGER = LogManager.getLogger(BooksGatewayController.class);
 
     private final RestTemplate restTemplate;
 
+    private final BookService bookService;
+
+    private final OrderService orderService;
+
+    private final DiscoveryClient discoveryClient;
+
     @Autowired
-    public BooksGatewayController(RestTemplate restTemplate) {
+    public BooksGatewayController(RestTemplate restTemplate, BookService bookService, OrderService orderService, DiscoveryClient discoveryClient) {
         this.restTemplate = restTemplate;
+        this.bookService = bookService;
+        this.orderService = orderService;
+        this.discoveryClient = discoveryClient;
     }
 
     @RequestMapping(method = RequestMethod.GET)
     public List<String> getBooksNames() {
+        List<ServiceInstance> instances = discoveryClient.getInstances("book-service");
+
         ParameterizedTypeReference<Resources<Book>> res = new ParameterizedTypeReference<Resources<Book>>() {
         };
 
@@ -42,33 +54,33 @@ public class BooksGatewayController {
                 .collect(Collectors.toList());
     }
 
-    @RequestMapping(method = RequestMethod.PUT)
-    public Order createOrder(@RequestParam String userName, @RequestParam String bookName, @RequestParam int count) {
-        logger.info("Create order called");
-
+    /**
+     * Creates new order and adds a first purchase to the shopping card
+     *
+     * @return the newly created order/shopping card
+     */
+    @RequestMapping(method = RequestMethod.POST)
+    public Order createShoppingCard(@RequestParam String userName, @RequestParam String bookName, @RequestParam int count) {
         if (count < 1) {
             throw new IllegalArgumentException("You cannot to order less than one book");
         }
 
         // book needed books
-        URI build;
-        try {
-            build = new URIBuilder("http://book-service/books")
-                    .addParameter("bookName", bookName)
-                    .addParameter("count", Integer.toString(-count)).build();
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException("Cannot build the url ", e);
+        bookService.reserveBook(bookName, count);
+        Order order = orderService.createOrGetExistingOrder(userName);
+        this.addItemToExistingOrder(order.id, bookName, count);
+
+        return order;
+    }
+
+    @RequestMapping(method = RequestMethod.PUT)
+    public void addItemToExistingOrder(@RequestParam int orderId, @RequestParam String bookName, @RequestParam int count) {
+        if (count < 1) {
+            throw new IllegalArgumentException("You cannot to order less than one book");
         }
 
-        // create an order
-        restTemplate.put(build, null);
-        try {
-            build = new URIBuilder("http://order-service/orders")
-                    .addParameter("userName", userName).build();
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException("Cannot build the url ", e);
-        }
-
-        return restTemplate.postForObject(build, null, Order.class);
+        // book needed books
+        bookService.reserveBook(bookName, count);
+        orderService.addDetailsToExistingOrder(orderId, bookName, count);
     }
 }

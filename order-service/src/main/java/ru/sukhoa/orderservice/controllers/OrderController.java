@@ -1,5 +1,7 @@
 package ru.sukhoa.orderservice.controllers;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,6 +19,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("orders")
 public class OrderController {
+    private static final Logger LOGGER = LogManager.getLogger(OrderController.class);
+
     private OrderRepository orderRepository;
 
     private UserRepository userRepository;
@@ -31,10 +35,16 @@ public class OrderController {
     public Order createOrder(@RequestParam String userName) {
         User user = userRepository.findByName(userName);
         if (user == null) {
-            throw new IllegalArgumentException("User doesn't exists");
+            throw new IllegalArgumentException("User doesn't exists " + userName);
         }
 
-        return orderRepository.save(new Order(user));
+        Order order = orderRepository.findByUsername(userName).stream()
+                .filter(Order::isCollecting)
+                .findFirst()
+                .orElse(orderRepository.save(new Order(user.getId())));
+
+        LOGGER.info("Return order {} for user {} ", order.getId(), user.getName());
+        return order;
     }
 
     @RequestMapping(method = RequestMethod.PUT)

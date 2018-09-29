@@ -10,12 +10,12 @@ public class Order {
     public Order() {
     }
 
-    public Order( int id ) {
+    public Order(int id) {
         this.id = id;
         this.details = null;
     }
 
-    public Order( int id, Set<OrderDetails> details ) {
+    public Order(int id, Set<OrderDetails> details) {
         this.id = id;
         this.details = details;
     }

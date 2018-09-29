@@ -1,4 +1,4 @@
-package ru.sukhoa.bookgatewayservice.controllers;
+package ru.sukhoa.bookgatewayservice.configurations;
 
 import io.micrometer.core.instrument.ImmutableTag;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;

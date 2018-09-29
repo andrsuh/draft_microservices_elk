@@ -1,4 +1,4 @@
-package ru.sukhoa.bookgatewayservice.controllers;
+package ru.sukhoa.bookgatewayservice.configurations;
 
 import io.micrometer.core.lang.NonNull;
 import io.micrometer.elastic.ElasticMeterRegistry;

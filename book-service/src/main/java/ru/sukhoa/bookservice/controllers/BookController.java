@@ -1,5 +1,7 @@
 package ru.sukhoa.bookservice.controllers;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,6 +15,8 @@ import java.util.List;
 @RestController
 @RequestMapping("books")
 public class BookController {
+
+    private static final Logger LOGGER = LogManager.getLogger(BookController.class);
 
     private BookRepository repository;
 
@@ -38,6 +42,7 @@ public class BookController {
         }
         book.setCount(book.getCount() + count);
         repository.save(book);
+        LOGGER.info("Added book {} number {}", bookName, count);
     }
 
     @RequestMapping(value = "withdraw", method = RequestMethod.PUT)
@@ -55,6 +60,7 @@ public class BookController {
         }
         book.setCount(book.getCount() - count);
         repository.save(book);
+        LOGGER.info("Booked book {} number {}", bookName, count);
     }
 }
 

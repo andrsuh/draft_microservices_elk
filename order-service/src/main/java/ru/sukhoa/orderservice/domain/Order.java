@@ -2,6 +2,8 @@ package ru.sukhoa.orderservice.domain;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -16,8 +18,10 @@ public class Order {
     @Id
     private int id = (int) (Math.random() * 100_000);
 
-    @OneToOne(fetch = FetchType.EAGER)
-    private User user;
+    private int userId;
+
+    @Enumerated(value = EnumType.STRING)
+    private OrderStatus status = OrderStatus.COLLECTING;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "orderId")
@@ -26,11 +30,15 @@ public class Order {
     public Order() {
     }
 
-    public Order(User user) {
-        this.user = user;
+    public Order(int userId) {
+        this.userId = userId;
     }
 
     public long getId() {
         return id;
+    }
+
+    public boolean isCollecting() {
+        return this.status == OrderStatus.COLLECTING;
     }
 }
