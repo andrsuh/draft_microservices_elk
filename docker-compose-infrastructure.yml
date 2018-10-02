@@ -30,7 +30,7 @@ services:
       - elasticsearch
 
   logstash:
-    image: logstash:latest
+    image: docker.elastic.co/logstash/logstash-oss:6.4.1
     ports:
       - "9600:9600"
     volumes:

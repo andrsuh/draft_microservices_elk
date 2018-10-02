@@ -1,4 +1,4 @@
-FROM ubuntu_java
+FROM store/oracle/serverjre:8
 
 WORKDIR /target
 

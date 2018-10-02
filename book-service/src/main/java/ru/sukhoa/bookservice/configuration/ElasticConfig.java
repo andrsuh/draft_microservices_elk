@@ -13,6 +13,7 @@ import java.util.Map;
 import static io.micrometer.core.instrument.Clock.SYSTEM;
 
 @Configuration
+@SuppressWarnings("Duplicates")
 public class ElasticConfig {
 
     @Value("${elastic.hosts}")
@@ -46,3 +47,4 @@ public class ElasticConfig {
         }, SYSTEM);
     }
 }
+

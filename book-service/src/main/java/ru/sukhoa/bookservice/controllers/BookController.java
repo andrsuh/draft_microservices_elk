@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.sukhoa.bookservice.domain.Book;
 import ru.sukhoa.bookservice.domain.BookRepository;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -26,8 +27,10 @@ public class BookController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    List<Book> getBooks() {
-        return repository.findAll();
+    List<Book> getBooks() throws InterruptedException {
+        Thread.sleep((long) ((Math.random() + 0.5) * 200)); // [100, 300)
+//        return repository.findAll();
+        return Collections.emptyList();
     }
 
     @RequestMapping(value = "add", method = RequestMethod.PUT)
