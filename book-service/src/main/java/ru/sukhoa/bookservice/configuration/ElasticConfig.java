@@ -25,6 +25,7 @@ public class ElasticConfig {
             private final Map<String, String> elasticProperties = new HashMap<String, String>() {
                 {
                     put(prefix() + ".hosts", elasticHosts);
+                    put(prefix() + ".index", "/metrics");
                 }
             };
 
@@ -40,10 +41,6 @@ public class ElasticConfig {
                 return Duration.ofSeconds(3);
             }
 
-            @Override
-            public String index() {
-                return "/metrics";
-            }
         }, SYSTEM);
     }
 }
