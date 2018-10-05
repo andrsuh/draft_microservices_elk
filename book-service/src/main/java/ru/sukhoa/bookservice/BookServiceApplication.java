@@ -58,6 +58,7 @@ public class BookServiceApplication {
         };
     }
 
+    // https://micrometer.io/docs/installing
     @Bean
     CommandLineRunner meterRegistryExample(ElasticMeterRegistry elasticMeterRegistry) {
         return args -> {
