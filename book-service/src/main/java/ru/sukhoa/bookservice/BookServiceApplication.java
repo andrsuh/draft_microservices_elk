@@ -27,9 +27,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import ru.sukhoa.bookservice.domain.Book;
 import ru.sukhoa.bookservice.domain.BookRepository;
+import ru.sukhoa.bookservice.services.BookService;
 
 import java.time.Duration;
 import java.time.temporal.TemporalUnit;
@@ -73,11 +76,11 @@ public class BookServiceApplication {
             Flux.interval(Duration.ofSeconds(1))
                     .doOnNext((n) -> {
                         // we are incrementing counters for all of the registers in the composite registry
-                        first.increment();
-                        LOGGER.info("counter : {}, tag : {} incremented, value = {}",
-                                first.getId().getName(), first.getId().getTags(), first.count());
+//                        first.increment();
+//                        LOGGER.info("counter : {}, tag : {} incremented, value = {}",
+//                                first.getId().getName(), first.getId().getTags(), first.count());
 
-                        second.increment(2);
+//                        second.increment(2);
                         LOGGER.info("counter : {}, tag : {} incremented, value = {}",
                                 second.getId().getName(), second.getId().getTags(), second.count());
                     }).subscribe();
@@ -107,11 +110,11 @@ public class BookServiceApplication {
 
             Flux.interval(Duration.ofSeconds(1))
                     .doOnNext((n) -> {
-//                        first.increment();
-//                        LOGGER.info("counter : {}, tag : {} incremented, value = {}",
-//                                first.getId().getName(), first.getId().getTags(), first.count());
+                        first.increment();
+                        LOGGER.info("counter : {}, tag : {} incremented, value = {}",
+                                first.getId().getName(), first.getId().getTags(), first.count());
 
-//                        second.increment(2);
+                        second.increment(2);
                         // getting certain metric by searching It in the registry
 //                        Counter secondCounterRef = Metrics.counter("my.counter", "tag", "2");
 //                        LOGGER.info(secondCounterRef == second);
@@ -194,8 +197,10 @@ public class BookServiceApplication {
 
                         // collection size gauge
                         if (Math.random() < 0.95) {
+                            //noinspection ConstantConditions
                             trackedList.add(new Object());
                         } else {
+                            //noinspection ConstantConditions
                             trackedList.clear();
                         }
                     }).subscribe();
@@ -203,9 +208,8 @@ public class BookServiceApplication {
     }
 
     @Bean
-    CommandLineRunner timersExample(MeterRegistry registry) {
+    CommandLineRunner timersExample(MeterRegistry registry, BookService bookService, NestedClass autowiredNestedClass) {
         return args -> {
-
             Timer timer = Timer.builder("my.timer")
                     .tags(Tags.empty())
                     .publishPercentileHistogram(true)
@@ -221,7 +225,8 @@ public class BookServiceApplication {
                         timer.record(() -> {
                             try {
                                 Thread.sleep((long) ((Math.random() + 0.5) * 100));
-                            } catch (InterruptedException ignored) {}
+                            } catch (InterruptedException ignored) {
+                            }
                         });
                     }).subscribe();
 
@@ -231,18 +236,36 @@ public class BookServiceApplication {
                         Timer.Sample sample = Timer.start();
                         try {
                             Thread.sleep((long) ((Math.random() + 1) * 100));
-                        } catch (InterruptedException ignored) {}
+                        } catch (InterruptedException ignored) {
+                        }
 
                         sample.stop(Metrics.globalRegistry.timer("my.second.timer"));
+                    }).subscribe();
+
+            NestedClass nestedClass = new NestedClass(); // not a bean
+            // recording method
+            Flux.interval(Duration.ofSeconds(1))
+                    .doOnNext((n) -> {
+                        nestedClass.recordingMethod(); // doesn't work
+                        autowiredNestedClass.recordingMethod(); // It works
+                        bookService.recordingMethod(); // It works
                     }).subscribe();
         };
     }
 
-    @Timed()
-    public void recordingMethod() {
-        try {
-            Thread.sleep((long) ((Math.random() + 0.5) * 100));
-        } catch (InterruptedException ignored) {}
+//    @Bean
+//    public NestedClass nestedClassBean() {
+//        return new NestedClass();
+//    }
+
+    private static class NestedClass {
+        @Timed(value = "my_third_timer", extraTags = {"hello", "bambaleyo"}, histogram = true, percentiles = {0.25, 0.5, 0.75})
+        void recordingMethod() {
+            try {
+                Thread.sleep((long) ((Math.random() + 0.5) * 100));
+            } catch (InterruptedException ignored) {
+            }
+        }
     }
 
     public static void main(String[] args) {
