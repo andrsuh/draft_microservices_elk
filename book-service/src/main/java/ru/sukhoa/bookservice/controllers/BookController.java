@@ -13,6 +13,7 @@ import ru.sukhoa.bookservice.domain.BookRepository;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
@@ -73,7 +74,12 @@ public class BookController {
 
     @Scheduled(fixedRate = 100)
     public void fileRead() throws IOException {
-        Files.write(Paths.get("/file"), "hello".getBytes(), null);
+        Path path = Paths.get("file");
+        if (!Files.exists(path)) {
+            Files.createFile(path);
+        }
+        Files.write(path, "hello".getBytes());
+        Files.delete(path);
     }
 }
 

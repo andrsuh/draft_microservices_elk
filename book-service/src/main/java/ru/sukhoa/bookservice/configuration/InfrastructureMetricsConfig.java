@@ -21,7 +21,6 @@ public class InfrastructureMetricsConfig {
     public MeterRegistryCustomizer metersCustomizer(@Value("${eureka.instance.instance-id}") String applicationId) {
         return (registry) ->
                 registry.config()
-                        .namingConvention(NamingConvention.dot)
                         .commonTags(Collections.singletonList(Tag.of("application_id", applicationId)));
     }
 

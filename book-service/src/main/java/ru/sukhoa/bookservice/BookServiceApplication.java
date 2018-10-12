@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import ru.sukhoa.bookservice.domain.Book;
@@ -46,6 +47,7 @@ import java.util.stream.Stream;
 
 @SpringBootApplication
 @EnableEurekaClient
+@EnableScheduling
 public class BookServiceApplication {
     private static final Logger LOGGER = LogManager.getLogger(BookServiceApplication.class);
 
